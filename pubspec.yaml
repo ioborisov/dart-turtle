@@ -1,5 +1,5 @@
 name: turtle
-version: 1.0.0
+version: 1.1.0
 author: Igor Borisov <mail@igor-borisov.ru>
 description: "Simple Turtle graphics.\r\nPorted from http://www.berniepope.id.au/html/js-turtle/turtle.html"
 documentation: README.md
