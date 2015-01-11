@@ -3,16 +3,19 @@
 library turtle.base;
 import "dart:html";
 import "dart:math";
-/// Get a handle for the canvases in the document.
-///
-/// Source: http://www.berniepope.id.au/html/js-turtle/turtle.html
-///
-/// The image canvas acts as an off-screen buffer for the
-/// images drawn by the turtle. The turtle itself is drawn
-/// in the visible turtle canvas, which is composited with
-/// the image canvas. This allows us to redraw the
-/// turtle (triangle) without messing up the previously
-/// drawn graphics.
+
+/**
+ *
+ * Get a handle for the canvases in the document.
+ *
+ * Source: http://www.berniepope.id.au/html/js-turtle/turtle.html
+ * The image canvas acts as an off-screen buffer for the
+ * images drawn by the turtle. The turtle itself is drawn
+ * in the visible turtle canvas, which is composited with
+ * the image canvas. This allows us to redraw the
+ * turtle (triangle) without messing up the previously drawn graphics.
+ *
+ */
 class Turtle {
 	CanvasElement _imageCanvas;
 	CanvasRenderingContext2D _imageContext;
@@ -73,24 +76,32 @@ class Turtle {
 		/// the turtle takes precedence when compositing
 		_turtleContext.globalCompositeOperation = 'destination-over';
 	}
+	/**
+	 * Draw the turtle and the current image if redraw is true.
+	 * For complicated drawings it is much faster to turn redraw off.
+	 */
 
-	/// Draw the turtle and the current image if redraw is true.
-	/// For complicated drawings it is much faster to turn redraw off.
 	void _drawIf() {
 		if (_redraw) _draw();
 	}
 
-	/// Use canvas centered coordinates facing upwards.
+	/**
+	 * Use canvas centered coordinates facing upwards.
+	 */
 	void _centerCoords(CanvasRenderingContext2D context) {
 		int width = context.canvas.width;
 		int height = context.canvas.height;
 		context.translate(width ~/ 2, height ~/ 2);
 		context.transform(1, 0, 0, -1, 0, 0);
 	}
+
 	void setTurtleColor(String color) {
 		_turtleColor = color;
 	}
-	/// Draw the turtle and the current image.
+
+	/**
+	 * Draw the turtle and the current image.
+	 */
 	void _draw() {
 		_clearContext(_turtleContext);
 		if (_visible) {
@@ -130,11 +141,14 @@ class Turtle {
 				_imageCanvas.height);
 	}
 
-	/// Clear the display, don't move the turtle.
+	/**
+	 * Clear the display, don't move the turtle.
+	 */
 	void _clear() {
 		_clearContext(_imageContext);
 		_drawIf();
 	}
+
 	void _clearContext(CanvasRenderingContext2D context) {
 		context.save();
 		context.setTransform(1, 0, 0, 1, 0, 0);
@@ -142,17 +156,20 @@ class Turtle {
 		context.restore();
 	}
 
-	/// Reset the whole system. Clear the display and move turtle back to
-	/// origin, facing the Y axis.
+	/**
+	 * Reset the whole system. Clear the display and move turtle back to
+	 * origin, facing the Y axis.
+	 */
 	void reset() {
 		_initialise();
 		_clear();
 		_draw();
 	}
 
-
-	/// Trace the forward motion of the turtle, allowing for possible
-	/// wrap-around at the boundaries of the canvas.
+	/**
+	 * Trace the forward motion of the turtle, allowing for possible
+	 * wrap-around at the boundaries of the canvas.
+	 */
 	void forward(int distance) {
 		_imageContext.save();
 		_centerCoords(_imageContext);
@@ -246,7 +263,14 @@ class Turtle {
 		forward(distance);
 		right(-180);
 	}
-
+	/// Trace the forward or backward motion of the turtle via forward or backword
+	void move(int distance) {
+		if(distance > 0){
+			forward(distance);
+    }else if(distance < 0){
+			backward(distance.abs());
+		}
+	}
 	bool _insideCanvas(num x, num y, num minX, num maxX, num minY, num maxY) {
 		return x >= minX && x <= maxX && y >= minY && y <= maxY;
 	}
@@ -304,18 +328,28 @@ class Turtle {
 	}
 
 	/// Turn right by an angle in degrees.
-	void right(num angle) {
+	void right([num angle=90]) {
 		_angle += _degToRad(angle);
 		_drawIf();
 	}
 
 	/// Turn left by an angle in degrees.
-	void left(num angle) {
+	void left([num angle=90]) {
 		_angle -= _degToRad(angle);
 		_drawIf();
 	}
-	/// Move the turtle to a particular coordinate (don't draw on the way there).
-	/// We should wrap the turtle here
+	/// Turn right or left by an angle in degrees via right or left.
+	void turn(num angle){
+		if(angle > 0){
+			right(angle);
+		}else if(angle < 0){
+			left(angle.abs());
+		}
+	}
+	/**
+	 * Move the turtle to a particular coordinate (don't draw on the way there).
+	 * We should wrap the turtle here
+	 */
 	void goto(num x, num y) {
 		if (_wrap) {
 			_pos["x"] = ((x + 150) % 300) - 150;
@@ -347,9 +381,12 @@ class Turtle {
 		_width = w;
 		_imageContext.lineWidth = w;
 	}
-	/// Write some text at the turtle position.
-	/// Need to counteract the fact that we flip the Y axis on the image context
-	/// to draw in turtle coordinates.
+
+	/**
+	 * Write some text at the turtle position.
+	 * Need to counteract the fact that we flip the Y axis on the image context
+	 * to draw in turtle coordinates.
+	 */
 	void write(String msg) {
 		_imageContext.save();
 		_centerCoords(_imageContext);
@@ -385,6 +422,7 @@ class Turtle {
 	void setBorder(String border) {
 		_turtleCanvas.style.border = border;
 	}
+
 	bool test(){
 		return true;
 	}
